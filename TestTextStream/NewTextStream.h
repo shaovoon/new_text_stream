@@ -679,13 +679,18 @@ new_text::ofstream& operator << (new_text::ofstream& ostm, const std::string& va
 // http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 // trim from left
 std::string &ltrim(std::string &s) {
-	s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](char ch) {
+		return !std::isspace(ch);
+	}));
 	return s;
 }
 
 // trim from right
 std::string &rtrim(std::string &s) {
-	s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+	s.erase(std::find_if(
+		s.rbegin(), s.rend(), [](char ch) { return !std::isspace(ch); })
+		.base(),
+		s.end());
 	return s;
 }
 

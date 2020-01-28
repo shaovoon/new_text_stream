@@ -5,6 +5,7 @@
 #include "OverloadStreamOperators.h"
 #include "NewTextStream.h"
 
+void TestStringInput();
 void TestNormal();
 void TestSetPrecision();
 void TestLeadingZeroes();
@@ -52,6 +53,9 @@ new_text::ifstream& operator >> (new_text::ifstream& istm, Date& date)
 // test whitespace trim
 int main(int argc, char* argv[])
 {
+	std::cout << "TestStringInput();" << std::endl;
+	TestStringInput();
+	/*
 	std::cout << "TestNormal();" << std::endl;
 	TestNormal();
 	std::cout << "TestSetPrecision();" << std::endl;
@@ -70,8 +74,41 @@ int main(int argc, char* argv[])
 	TestReadIni();
 	std::cout << "TestHex();" << std::endl;
 	TestHex();
-	
+	*/
 	return 0;
+}
+
+void TestStringInput()
+{
+	try
+	{
+		new_text::ifstream is;
+
+		std::string log_line = "2020-01-16 18:23:56.020 NEW_USER UserName=Kelly, DoB=1999-01-02";
+		log_line = log_line.substr(24); // get rid of the log timestamp
+		is.str(log_line);
+		/*
+		if (is.match("NEW_USER UserName={0}, DoB={1}"))
+		{
+			std::string name = "";
+			std::string date = "";
+			is >> name >> date;
+			std::cout << name << ":" << date << std::endl;
+		}
+		*/
+		if (is.match("NEW_USER UserName={0}, DoB={1:t}-{2:02}-{3:02}")) // Parse date in YYYY-MM-DD
+		{
+			std::string name = "";
+			int year = 0, month = 0, day = 0;
+			is >> name >> year >> month >> day;
+			std::cout << name << ":" << year << "-" << month << "-" << day << std::endl;
+		}
+	}
+	catch (std::exception & e)
+	{
+		std::cout << "Exception thrown:" << e.what() << std::endl;
+	}
+
 }
 
 void TestNormal()
